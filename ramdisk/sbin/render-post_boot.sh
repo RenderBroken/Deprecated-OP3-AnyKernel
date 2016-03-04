@@ -127,6 +127,7 @@ echo 1 > /dev/cpuctl/cpu.notify_on_migrate
 echo 1 > /sys/module/state_notifier/parameters/enabled
 echo 1 > /sys/module/workqueue/parameters/power_efficient
 echo 1 > /sys/android_touch/wake_gestures
+echo 1 > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
 
 ############################
 # Disable Debugging
