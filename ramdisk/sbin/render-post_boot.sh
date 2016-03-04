@@ -29,6 +29,19 @@ echo 1 > /sys/module/cpu_boost/parameters/hotplug_boost
 echo 1 > /sys/module/cpu_boost/parameters/wakeup_boost
 
 ############################
+# MSM Limiter
+#
+echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_0
+echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_1
+echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_2
+echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_3
+echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_0
+echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_1
+echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_2
+echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_3
+echo 1267200 > /sys/kernel/msm_limiter/suspend_max_freq
+
+############################
 # Governor Tunings
 #
 echo ondemand > /sys/kernel/msm_limiter/scaling_governor_0
