@@ -31,6 +31,7 @@ echo 1 > /sys/module/cpu_boost/parameters/wakeup_boost
 ############################
 # MSM Limiter
 #
+echo 1 > /sys/kernel/msm_limiter/limiter_enabled
 echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_0
 echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_1
 echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_2
