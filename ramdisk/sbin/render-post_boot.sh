@@ -7,45 +7,34 @@ echo "[Render-Kernel] Boot Script Started" | tee /dev/kmsg
 stop mpdecision
 
 ############################
-# MSM_Hotplug Settings
+# State_Helper Settings
 #
-echo 1 > /sys/module/msm_hotplug/min_cpus_online
-echo 2 > /sys/module/msm_hotplug/cpus_boosted
-echo 500 > /sys/module/msm_hotplug/down_lock_duration
-echo 3500 > /sys/module/msm_hotplug/boost_lock_duration
-echo 200 5:100 50:50 350:200 > /sys/module/msm_hotplug/update_rates
-echo 100 > /sys/module/msm_hotplug/fast_lane_load
-echo 1 > /sys/module/msm_hotplug/max_cpus_online_susp
+echo 20 > /sys/kernel/state_helper/batt_level_eco
+echo 10 > /sys/kernel/state_helper/batt_level_cri
 
 ############################
 # CPU-Boost Settings
 #
-echo 20 > /sys/module/cpu_boost/parameters/boost_ms
-echo 500 > /sys/module/cpu_boost/parameters/input_boost_ms
-echo 0:1497600 1:1497600 2:1497600 3:1497600 > /sys/module/cpu_boost/parameters/input_boost_freq
-echo 1728000 > /sys/module/cpu_boost/parameters/sync_threshold
-echo 20 > /sys/module/cpu_boost/parameters/migration_load_threshold
-echo 1 > /sys/module/cpu_boost/parameters/hotplug_boost
-echo 1 > /sys/module/cpu_boost/parameters/wakeup_boost
+# echo 20 > /sys/module/cpu_boost/parameters/boost_ms
+echo 2000 > /sys/module/cpu_boost/parameters/input_boost_ms
+echo 0:883200 1:883200 2:883200 3:883200 > /sys/module/cpu_boost/parameters/input_boost_freq
+# echo 1497600 > /sys/module/cpu_boost/parameters/sync_threshold
+echo 30 > /sys/module/cpu_boost/parameters/migration_load_threshold
+echo 0 > /sys/module/cpu_boost/parameters/hotplug_boost
+echo 0 > /sys/module/cpu_boost/parameters/wakeup_boost
 
 ############################
 # MSM Limiter
 #
-echo 1 > /sys/kernel/msm_limiter/limiter_enabled
-echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_0
-echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_1
-echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_2
-echo 268800 > /sys/kernel/msm_limiter/suspend_min_freq_3
-echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_0
-echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_1
-echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_2
-echo 2649600 > /sys/kernel/msm_limiter/resume_max_freq_3
-echo 1267200 > /sys/kernel/msm_limiter/suspend_max_freq
+echo 0:268800 1:268800 2:268800 3:268800 > /sys/kernel/msm_limiter/suspend_min_freq
+echo 0:2649600 1:2649600 2:2649600 3:2649600 > sys/kernel/msm_limiter/resume_max_freq
+echo 0:1267200 1:1267200 2:1267200 3:1267200 > /sys/kernel/msm_limiter/suspend_max_freq
+echo 1 > /sys/kernel/msm_limiter/freq_control 
 
 ############################
 # Governor Tunings
 #
-echo ondemand > /sys/kernel/msm_limiter/scaling_governor_0
+echo ondemand > /sys/kernel/msm_limiter/scaling_governor
 echo 95 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
 echo 50000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
 echo 1 > /sys/devices/system/cpu/cpufreq/ondemand/io_is_busy
@@ -53,40 +42,28 @@ echo 4 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
 echo 10 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential
 echo 75 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_multi_core
 echo 3 > /sys/devices/system/cpu/cpufreq/ondemand/down_differential_multi_core
-echo 960000 > /sys/devices/system/cpu/cpufreq/ondemand/optimal_freq
-echo 960000 > /sys/devices/system/cpu/cpufreq/ondemand/sync_freq
+echo 883200 > /sys/devices/system/cpu/cpufreq/ondemand/optimal_freq
+echo 1190400 > /sys/devices/system/cpu/cpufreq/ondemand/sync_freq
 echo 85 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold_any_cpu_load
 
-echo impulse > /sys/kernel/msm_limiter/scaling_governor_0
-echo 20000 1400000:40000 1700000:20000 > /sys/devices/system/cpu/cpufreq/impulse/above_hispeed_delay
-echo 95 > /sys/devices/system/cpu/cpufreq/impulse/go_hispeed_load
-echo 1190400 > /sys/devices/system/cpu/cpufreq/impulse/hispeed_freq
-echo 1 > /sys/devices/system/cpu/cpufreq/impulse/io_is_busy
-echo 85 1500000:90 1800000:70 > /sys/devices/system/cpu/cpufreq/impulse/target_loads
-echo 40000 > /sys/devices/system/cpu/cpufreq/impulse/min_sample_time
-echo 30000 > /sys/devices/system/cpu/cpufreq/impulse/timer_rate
-echo 100000 > /sys/devices/system/cpu/cpufreq/impulse/max_freq_hysteresis
-echo 30000 > /sys/devices/system/cpu/cpufreq/impulse/timer_slack
-echo 1 > /sys/devices/system/cpu/cpufreq/impulse/powersave_bias
-
-echo smartmax > /sys/kernel/msm_limiter/scaling_governor_0
-echo smartmax > /sys/kernel/msm_limiter/scaling_governor_1
-echo smartmax > /sys/kernel/msm_limiter/scaling_governor_2
-echo smartmax > /sys/kernel/msm_limiter/scaling_governor_3
+echo smartmax > /sys/kernel/msm_limiter/scaling_governor
 echo 729600 > /sys/devices/system/cpu/cpufreq/smartmax/suspend_ideal_freq
-echo 1036800 > /sys/devices/system/cpu/cpufreq/smartmax/awake_ideal_freq
+echo 1190400 > /sys/devices/system/cpu/cpufreq/smartmax/awake_ideal_freq
 echo 1 > /sys/devices/system/cpu/cpufreq/smartmax/io_is_busy
 echo 70 > /sys/devices/system/cpu/cpufreq/smartmax/max_cpu_load
 echo 30 > /sys/devices/system/cpu/cpufreq/smartmax/min_cpu_load
-echo 1497600 > /sys/devices/system/cpu/cpufreq/smartmax/touch_poke_freq
-echo 1497600 > /sys/devices/system/cpu/cpufreq/smartmax/boost_freq
 
-echo interactive > /sys/kernel/msm_limiter/scaling_governor_0
+echo elementalx > /sys/kernel/msm_limiter/scaling_governor
+echo 883200 > /sys/devices/system/cpu/cpufreq/elementalx/active_floor_req
+echo 1497600 > /sys/devices/system/cpu/cpufreq/elementalx/gboost_min_freq
+echo 50000 > /sys/devices/system/cpu/cpufreq/elementalx/sampling_rate
+
+echo interactive > /sys/kernel/msm_limiter/scaling_governor
 echo 20000 1400000:40000 1700000:20000 > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
-echo 90 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+echo 80 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
 echo 1190400 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
 echo 1 > /sys/devices/system/cpu/cpufreq/interactive/io_is_busy
-echo 85 1500000:90 1800000:70 > /sys/devices/system/cpu/cpufreq/interactive/target_loads
+echo 75 1500000:80 1800000:60 > /sys/devices/system/cpu/cpufreq/interactive/target_loads
 echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
 echo 30000 > /sys/devices/system/cpu/cpufreq/interactive/timer_rate
 echo 100000 > /sys/devices/system/cpu/cpufreq/interactive/max_freq_hysteresis
@@ -96,25 +73,18 @@ echo 30000 > /sys/devices/system/cpu/cpufreq/interactive/timer_slack
 # Scheduler and Read Ahead
 #
 echo zen > /sys/block/mmcblk0/queue/scheduler
-echo 1024 > /sys/block/mmcblk0/bdi/read_ahead_kb
+echo 512 > /sys/block/mmcblk0/bdi/read_ahead_kb
 
 ############################
-# Adaptive LMK
+# LMK
 #
-# echo 1536,2048,4096,16384,28672,32768 > /sys/module/lowmemorykiller/parameters/minfree
-# echo 32 > /sys/module/lowmemorykiller/parameters/cost
-echo 1 > /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk
-echo 53059 > /sys/module/lowmemorykiller/parameters/vmpressure_file_min
-echo 1 > /sys/module/process_reclaim/parameters/enable_process_reclaim
-echo 100 > /sys/module/process_reclaim/parameters/pressure_max
-echo 200 > /proc/sys/vm/dirty_expire_centisecs
-echo 20 > /proc/sys/vm/dirty_background_ratio
-echo 40 > /proc/sys/vm/dirty_ratio
-echo 0 > /proc/sys/vm/swappiness
+echo 32 > /sys/module/lowmemorykiller/parameters/cost
 
 ############################
 # Tweak Background Writeout
 #
+echo 1 > /sys/module/process_reclaim/parameters/enable_process_reclaim
+echo 100 > /sys/module/process_reclaim/parameters/pressure_max
 echo 20 > /proc/sys/vm/dirty_background_ratio
 echo 200 > /proc/sys/vm/dirty_expire_centisecs
 echo 40 > /proc/sys/vm/dirty_ratio
@@ -124,11 +94,25 @@ echo 80 > /proc/sys/vm/vfs_cache_pressure
 ############################
 # MISC Tweaks
 #
-echo 1 > /dev/cpuctl/cpu.notify_on_migrate
+echo 0 > /dev/cpuctl/apps/cpu.notify_on_migrate
 echo 1 > /sys/module/state_notifier/parameters/enabled
 echo 1 > /sys/module/workqueue/parameters/power_efficient
+echo 0 > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
+echo 0 > /sys/kernel/sched/gentle_fair_sleepers
+echo 0 > /sys/module/lpm_levels/parameters/sleep_disabled
+echo "enabled" > /sys/devices/qcom,bcl.39/mode
+
+############################
+# Thermal - Adjust Defaults
+#
+echo 0 > /sys/module/msm_thermal/core_control/enabled
+echo 1 > /sys/module/msm_thermal/parameters/enabled
+
+############################
+# Wake Geatures
+#
 echo 1 > /sys/android_touch/wake_gestures
-echo 1 > /sys/module/simple_gpu_algorithm/parameters/simple_gpu_activate
+echo 1 > /sys/android_touch/doubletap2wake
 
 ############################
 # Disable Debugging
@@ -161,7 +145,7 @@ if [ -e /system/lib/libsupol.so ]; then
 	"allow zygote system_file file write" \
 	"allow atfwd property_socket sock_file write" \
 	"allow debuggerd app_data_file dir search" \
-	"allow sensors diag_device chr_file { read write open ioctl }" \
+[l;	"allow sensors diag_device chr_file { read write open ioctl }" \
 	"allow sensors sensors capability net_raw" \
 	"allow init kernel security setenforce" \
 	"allow netmgrd netmgrd netlink_xfrm_socket nlmsg_write" \
@@ -182,4 +166,13 @@ pm enable com.google.android.gsf/.update.SystemUpdateService
 pm enable com.google.android.gsf/.update.SystemUpdateService$Receiver
 pm enable com.google.android.gsf/.update.SystemUpdateService$SecretCodeReceiver
 
+############################
+# Init.d Support
+#
+/sbin/busybox run-parts /system/etc/init.d
+
+############################
+# Boot Script is complete, now enable SELinux
+#
+#setenforce 1
 echo "[Render-Kernel] Boot Script Completed!" | tee /dev/kmsg
