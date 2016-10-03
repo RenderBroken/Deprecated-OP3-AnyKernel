@@ -6,12 +6,13 @@
 kernel.string=Render Kernel by RenderBroken!
 do.devicecheck=1
 do.initd=0
-do.modules=0
+do.modules=1
 do.cleanup=1
-device.name1=shamu
+device.name1=OnePlus3
+device.name2=oneplus3
 
 # shell variables
-block=/dev/block/platform/msm_sdcc.1/by-name/boot;
+block=/dev/block/bootdevice/by-name/boot;
 
 ## end setup
 
@@ -27,7 +28,12 @@ chmod -R 755 $bin;
 mkdir -p $ramdisk $split_img;
 
 OUTFD=/proc/self/fd/$1;
+
+# ui_print <text>
 ui_print() { echo -e "ui_print $1\nui_print" > $OUTFD; }
+
+# contains <string> <substring>
+contains() { test "${1#*$2}" != "$1" && return 0 || return 1; }
 
 # dump boot and extract ramdisk
 dump_boot() {
@@ -74,7 +80,8 @@ write_boot() {
     dtb=`ls *-dtb`;
     dtb="--dt $split_img/$dtb";
   fi;
-  $bin/mkbootfs /tmp/anykernel/ramdisk | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
+  cd $ramdisk;
+  find . | cpio -H newc -o | gzip > /tmp/anykernel/ramdisk-new.cpio.gz;
   if [ $? != 0 ]; then
     ui_print " "; ui_print "Repacking ramdisk failed. Aborting..."; exit 1;
   fi;
@@ -83,6 +90,12 @@ write_boot() {
     ui_print " "; ui_print "Repacking image failed. Aborting..."; exit 1;
   elif [ `wc -c < /tmp/anykernel/boot-new.img` -gt `wc -c < /tmp/anykernel/boot.img` ]; then
     ui_print " "; ui_print "New image larger than boot partition. Aborting..."; exit 1;
+  fi;
+  if [ -f "/data/custom_boot_image_patch.sh" ]; then
+    ash /data/custom_boot_image_patch.sh /tmp/anykernel/boot-new.img;
+    if [ $? != 0 ]; then
+      ui_print " "; ui_print "User script execution failed. Aborting..."; exit 1;
+    fi;
   fi;
   dd if=/tmp/anykernel/boot-new.img of=$block;
 }
@@ -189,26 +202,17 @@ patch_fstab() {
 }
 
 ## end methods
+# set permissions for included files
+chmod -R 755 $ramdisk
 
 ## AnyKernel install
 dump_boot;
 
 # begin ramdisk changes
 
-# init.shamu.rc
-backup_file init.shamu.rc;
-#replace_section init.shamu.rc "service mpdecision" "disabled" "#service mpdecision /system/bin/mpdecision --avg_comp\n#   class main\n#   user root\n#   group root readproc\n#    writepid /dev/cpuset/system-background/tasks\n#   disabled";
-replace_string init.shamu.rc "#    verity_load_state" "    verity_load_state" "#    verity_load_state"
-append_file init.shamu.rc "render-post_boot" init.shamu.patch;
-
-# add frandom compatibility
-backup_file ueventd.rc;
-insert_line ueventd.rc "frandom" after "urandom" "/dev/frandom              0666   root       root\n";
-insert_line ueventd.rc "erandom" after "urandom" "/dev/erandom              0666   root       root\n";
-
-backup_file file_contexts;
-insert_line file_contexts "frandom" after "urandom" "/dev/frandom		u:object_r:frandom_device:s0\n";
-insert_line file_contexts "erandom" after "urandom" "/dev/erandom               u:object_r:erandom_device:s0\n";
+# init.qcom.rc
+backup_file init.qcom.rc;
+append_file init.qcom.rc "render-post_boot" init.qcom.patch;
 
 # end ramdisk changes
 
